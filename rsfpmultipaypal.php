@@ -190,7 +190,7 @@ class plgSystemRsfpmultipaypal extends JPlugin
 
 	public function onRsformBackendAfterShowConfigurationTabs($tabs)
 	{
-		$tabs->addTitle(JText::_('RSFP_PAYPAL_LABEL'), 'form-paypal');
+		$tabs->addTitle(JText::_('RSFP_MULTI_PAYPAL_LABEL'), 'form-multipaypal');
 		$tabs->addContent($this->configurationScreen());
 	}
 
