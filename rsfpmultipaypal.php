@@ -24,7 +24,7 @@ class plgSystemRsfpmultipaypal extends JPlugin
 
 		$fieldGroups['payment']->fields[] = (object) array(
 			'id' 	=> RSFORM_FIELD_MULTI_PAYMENT_PAYPAL,
-			'name' 	=> JText::_('RSFP_PAYPAL_COMPONENT'),
+			'name' 	=> JText::_('RSFP_MULTI_PAYPAL_COMPONENT'),
 			'icon'  => 'rsficon rsficon-paypal',
 			'exists' => $exists ? $exists[0] : false
 		);
