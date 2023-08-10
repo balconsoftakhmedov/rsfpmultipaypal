@@ -241,7 +241,7 @@ class plgSystemRsfpmultipaypal extends JPlugin
 	public function onRsformFrontendSwitchTasks()
 	{
 		$input    = JFactory::getApplication()->input;
-
+JLog::addLogger(array('text_file' => 'rsform_payme.php'), JLog::ALL, array('com_rsform'));
 		// Notification receipt from Paypal
 		if ($input->getString('plugin_task', '') == 'multipaypal.notify')
 		{
