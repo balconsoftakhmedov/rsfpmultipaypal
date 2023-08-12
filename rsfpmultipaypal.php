@@ -205,7 +205,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 			$code   = $input->getCmd( 'code' );
 			$formId = $input->getInt( 'formId' );
 			$this->addLogEntry( 'IPN received from PayPal' );
-			$validation = $this->validateIpn();
+			$validation = $this->validateIpn($formId);
 			if ( $validation['error'] ) {
 				$message = 'Validation failed -> ' . $validation['reason'];
 				$this->addLogEntry( $message );
@@ -275,7 +275,13 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 	 * @return array
 	 * @throws Exception
 	 */
-	public function validateIpn($formId) {
+	public function validateIpn($formId = '') {
+
+
+		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
+			$data           = RSFormProHelper::getComponentProperties( $components[0] );
+			$customer_email = $data['Email'];
+		}
 		/**
 		 * Set the URL
 		 */
