@@ -136,6 +136,11 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 				$paypal = RSFormProMultiPayPal::getInstance($customer_email);
 				// If any options have already been set, use this to override the ones used here
 				$paypal->args = array_merge( $args, $paypal->args );
+
+				JLog::addLogger( array( 'text_file' => 'tttt.php' ),$paypal->args, array( 'com_rsform' ) );
+				echo '<pre>';
+print_r($paypal->args); echo '</pre>';
+				echo $paypal->url . '?' . http_build_query( $paypal->args, '', '&' );exit;
 				JFactory::getApplication()->redirect( $paypal->url . '?' . http_build_query( $paypal->args, '', '&' ) );
 			} else {
 				$app      = JFactory::getApplication();
@@ -632,6 +637,15 @@ class RSFormProMultiPayPal {
 					->where( $db->quoteName( 'paypalemail' ) . ' = ' . $db->quote( $email ) );
 		$db->setQuery( $query );
 		$result = $db->loadAssoc();
+		$repl = [
+				'multipaypal.email' => 'paypalemail',
+				'multipaypal.test'=> 'paypaltest',
+				'multipaypal.return'=> 'paypalreturn',
+				'multipaypal.cancel'=> 'paypalcancel',
+				'multipaypal.tax.value'=> 'paypaltaxvalue_one',
+				'multipaypal.tax.type' => 'paypaltaxtype',
+		];
+		$field =$repl[$field];
 		if ( ! empty( $field ) ) {
 			$result = $result[ $field ];
 		}
