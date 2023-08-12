@@ -92,41 +92,51 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		if ( $payValue != $this->componentValue ) {
 			return;
 		}
-		if ( $price > 0 ) {
-			list( $replace, $with ) = RSFormProHelper::getReplacements( $SubmissionId );
-			$args = array(
-					'cmd'           => '_xclick',
-					'business'      => RSFormProHelper::getConfig( 'multipaypal.email' ),
-					'item_name'     => implode( ', ', $products ),
-					'currency_code' => RSFormProHelper::getConfig( 'payment.currency' ),
-					'amount'        => number_format( $price, 2, '.', '' ),
-					'notify_url'    => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.notify&code=' . $code,
-					'charset'       => 'utf-8',
-					'lc'            => RSFormProHelper::getConfig( 'multipaypal.language' ) ? RSFormProHelper::getConfig( 'multipaypal.language' ) : 'US',
-					'bn'            => 'RSJoomla_SP',
-					'return'        => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.return'
-			);
-			// Add cancel URL
-			if ( $cancel = RSFormProHelper::getConfig( 'multipaypal.cancel' ) ) {
-				$args['cancel_return'] = str_replace( $replace, $with, $cancel );
-			}
-			// Add return URL
-			if ( $return = RSFormProHelper::getConfig( 'multipaypal.return' ) ) {
-				$args['return'] = str_replace( $replace, $with, $return );
-			}
-			// Add tax
-			if ( $tax = RSFormProHelper::getConfig( 'multipaypal.tax.value' ) ) {
-				if ( RSFormProHelper::getConfig( 'multipaypal.tax.type' ) ) {
-					$args['tax'] = $tax;
-				} else {
-					$args['tax_rate'] = $tax;
+		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
+			$data = RSFormProHelper::getComponentProperties( $components[0] );
+			print_r( $data );
+			if ( $price > 0 ) {
+				list( $replace, $with ) = RSFormProHelper::getReplacements( $SubmissionId );
+				$args = array(
+						'cmd'           => '_xclick',
+						'business'      => RSFormProHelper::getConfig( 'multipaypal.email' ),
+						'item_name'     => implode( ', ', $products ),
+						'currency_code' => RSFormProHelper::getConfig( 'payment.currency' ),
+						'amount'        => number_format( $price, 2, '.', '' ),
+						'notify_url'    => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.notify&code=' . $code,
+						'charset'       => 'utf-8',
+						'lc'            => RSFormProHelper::getConfig( 'multipaypal.language' ) ? RSFormProHelper::getConfig( 'multipaypal.language' ) : 'US',
+						'bn'            => 'RSJoomla_SP',
+						'return'        => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.return'
+				);
+				// Add cancel URL
+				if ( $cancel = RSFormProHelper::getConfig( 'multipaypal.cancel' ) ) {
+					$args['cancel_return'] = str_replace( $replace, $with, $cancel );
 				}
+				// Add return URL
+				if ( $return = RSFormProHelper::getConfig( 'multipaypal.return' ) ) {
+					$args['return'] = str_replace( $replace, $with, $return );
+				}
+				// Add tax
+				if ( $tax = RSFormProHelper::getConfig( 'multipaypal.tax.value' ) ) {
+					if ( RSFormProHelper::getConfig( 'multipaypal.tax.type' ) ) {
+						$args['tax'] = $tax;
+					} else {
+						$args['tax_rate'] = $tax;
+					}
+				}
+				// Get a new instance of the PayPal object. This is used so that we can programatically change values sent to PayPal through the "Scripts" areas.
+				$paypal = RSFormProMultiPayPal::getInstance();
+				// If any options have already been set, use this to override the ones used here
+				$paypal->args = array_merge( $args, $paypal->args );
+				JFactory::getApplication()->redirect( $paypal->url . '?' . http_build_query( $paypal->args, '', '&' ) );
+			} else {
+				$app      = JFactory::getApplication();
+				$errorMsg = 'Please Contact site administrator. Wrong Paypal Email Credentials';
+				$app->enqueueMessage( $errorMsg, 'error' );
+				$currentUrl = JUri::getInstance()->toString();
+				JFactory::getApplication()->redirect( $currentUrl );
 			}
-			// Get a new instance of the PayPal object. This is used so that we can programatically change values sent to PayPal through the "Scripts" areas.
-			$paypal = RSFormProMultiPayPal::getInstance();
-			// If any options have already been set, use this to override the ones used here
-			$paypal->args = array_merge( $args, $paypal->args );
-			JFactory::getApplication()->redirect( $paypal->url . '?' . http_build_query( $paypal->args, '', '&' ) );
 		}
 	}
 
@@ -591,16 +601,13 @@ class RSFormProMultiPayPal {
 	public static function getPaypalusers() {
 
 		$db = JFactory::getDbo();
-
 		$query = $db->getQuery( true )
 					->select( 'paypalemail' )
 					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) );
-
 		$db->setQuery( $query );
+		$results      = $db->loadAssocList();
+		$uniqueEmails = array_unique( array_column( $results, 'paypalemail' ) );
 
-		$results = $db->loadAssocList();
-		$uniqueEmails = array_unique(array_column($results, 'paypalemail'));
-
-		return implode("\n", $uniqueEmails);
+		return implode( "\n", $uniqueEmails );
 	}
 }
