@@ -285,7 +285,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		/**
 		 * Set the URL
 		 */
-		$url = RSFormProHelper::getConfig( 'multipaypal.test' ) ? 'https://ipnpb.paypal.com/cgi-bin/webscr' : 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
+		$url = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.test' ) ? 'https://ipnpb.paypal.com/cgi-bin/webscr' : 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr';
 		/**
 		 * Build a default array for errors
 		 */
@@ -414,16 +414,16 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		 * Check if the Email address of the receiving end is the same with the one from RSForm!Pro Configuration
 		 * return error if it isn't
 		 */
-		if ( RSFormProHelper::getConfig( 'multipaypal.email' ) !== $validation_fields['receiver_email'] ) {
+		if ( RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.email' ) !== $validation_fields['receiver_email'] ) {
 			$array['error']  = true;
-			$array['reason'] = sprintf( 'The email address is not correct - received %s, expected %s', $validation_fields['receiver_email'], RSFormProHelper::getConfig( 'multipaypal.email' ) );
+			$array['reason'] = sprintf( 'The email address is not correct - received %s, expected %s', $validation_fields['receiver_email'], RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.email' ) );
 
 			return $array;
 		}
 		/**
 		 * Write it in log if it passed
 		 */
-		$this->addLogEntry( sprintf( 'Checking the email address : %s - %s. Email address is correct.', RSFormProHelper::getConfig( 'multipaypal.email' ), $validation_fields['receiver_email'] ) );
+		$this->addLogEntry( sprintf( 'Checking the email address : %s - %s. Email address is correct.', RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.email' ), $validation_fields['receiver_email'] ) );
 		/**
 		 * Check the currency of the transaction, see if it matches RSForm!Pro Configuration
 		 */
