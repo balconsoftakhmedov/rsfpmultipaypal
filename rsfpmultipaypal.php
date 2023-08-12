@@ -604,4 +604,3 @@ class RSFormProMultiPayPal {
 		return implode("\n", $uniqueEmails);
 	}
 }
-
