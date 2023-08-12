@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../administrator/components/com_rsform/.idea/com_rsform.iml" filepath="$PROJECT_DIR$/../../../administrator/components/com_rsform/.idea/com_rsform.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/rsfpmultipaypal.iml" filepath="$PROJECT_DIR$/.idea/rsfpmultipaypal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../rsfppayment/.idea/rsfppayment.iml" filepath="$PROJECT_DIR$/../rsfppayment/.idea/rsfppayment.iml" />
     </modules>
   </component>
 </project>
