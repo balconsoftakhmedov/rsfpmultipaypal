@@ -94,7 +94,9 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		}
 		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
 			$data = RSFormProHelper::getComponentProperties( $components[0] );
-			print_r( $data );
+
+$customer_email = $data['Email'];
+
 			if ( $price > 0 ) {
 				list( $replace, $with ) = RSFormProHelper::getReplacements( $SubmissionId );
 				$args = array(
@@ -609,5 +611,17 @@ class RSFormProMultiPayPal {
 		$uniqueEmails = array_unique( array_column( $results, 'paypalemail' ) );
 
 		return implode( "\n", $uniqueEmails );
+	}
+
+	public static function getPaypaluser( $email ) {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery( true )
+					->select( '*' )
+					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) )
+					->where( $db->quoteName( 'paypalemail' ) . ' = ' . $db->quote( $email ) );
+		$db->setQuery( $query );
+		$result = $db->loadAssoc();
+
+		return $result;
 	}
 }
