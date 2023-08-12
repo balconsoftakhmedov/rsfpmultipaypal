@@ -16,8 +16,8 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 	protected $autoloadLanguage = true;
 
 	public function onRsformBackendAfterCreateFieldGroups( &$fieldGroups, $self ) {
-		$formId = JFactory::getApplication()->input->getInt( 'formId' );
-		$exists = RSFormProHelper::componentExists( $formId, RSFORM_FIELD_MULTI_PAYMENT_PAYPAL );
+		$formId                           = JFactory::getApplication()->input->getInt( 'formId' );
+		$exists                           = RSFormProHelper::componentExists( $formId, RSFORM_FIELD_MULTI_PAYMENT_PAYPAL );
 		$fieldGroups['payment']->fields[] = (object) array(
 				'id'     => RSFORM_FIELD_MULTI_PAYMENT_PAYPAL,
 				'name'   => JText::_( 'RSFP_MULTI_PAYPAL_COMPONENT' ),
@@ -45,9 +45,9 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 					return;
 				}
 			}
-			$grandTotal = $this->calcTax( $args['submission']->values['rsfp_Total'], RSFormProHelper::getConfig( 'multipaypal.tax.value' ), RSFormProHelper::getConfig( 'multipaypal.tax.type' ) );
-			$placeholders = &$args['placeholders'];
-			$values       = &$args['values'];
+			$grandTotal     = $this->calcTax( $args['submission']->values['rsfp_Total'], RSFormProHelper::getConfig( 'multipaypal.tax.value' ), RSFormProHelper::getConfig( 'multipaypal.tax.type' ) );
+			$placeholders   = &$args['placeholders'];
+			$values         = &$args['values'];
 			$placeholders[] = '{grandtotal}';
 			$values[]       = $this->number_format( $grandTotal );
 			$placeholders[] = '{tax}';
@@ -73,7 +73,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 
 	public function onRsformGetPayment( &$items, $formId ) {
 		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
-			$data = RSFormProHelper::getComponentProperties( $components[0] );
+			$data        = RSFormProHelper::getComponentProperties( $components[0] );
 			$item        = new stdClass();
 			$item->value = $this->componentValue;
 			$item->text  = $data['LABEL'];
@@ -301,7 +301,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		$req = $this->_buildPostData();
 		try {
 			$response = $http->post( $url, $req, array(), 5 );
-			$code = $response->code;
+			$code     = $response->code;
 			if ( $code != 200 ) {
 				throw new Exception( sprintf( 'Connection Error: %d', $response->code ) );
 			}
@@ -441,7 +441,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		$raw_post_data = file_get_contents( 'php://input' );
 		if ( $raw_post_data ) {
 			$raw_post_array = explode( '&', $raw_post_data );
-			$myPost = array();
+			$myPost         = array();
 			foreach ( $raw_post_array as $keyval ) {
 				$keyval = explode( '=', $keyval, 2 );
 				if ( count( $keyval ) == 2 ) {
@@ -456,15 +456,15 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 				continue;
 			}
 			$value = urlencode( $value );
-			$req .= "&$key=$value";
+			$req   .= "&$key=$value";
 		}
 
 		return $req;
 	}
 
 	private function loadFormData() {
-		$data = array();
-		$db   = JFactory::getDbo();
+		$data  = array();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery( true )
 					->select( '*' )
 					->from( $db->qn( '#__rsform_config' ) )
@@ -590,5 +590,18 @@ class RSFormProMultiPayPal {
 
 	public static function getPaypalusers() {
 
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery( true )
+					->select( 'paypalemail' )
+					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) );
+
+		$db->setQuery( $query );
+
+		$results = $db->loadAssocList();
+		$uniqueEmails = array_unique(array_column($results, 'paypalemail'));
+
+		return implode("\n", $uniqueEmails);
 	}
 }
+
