@@ -45,7 +45,10 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 					return;
 				}
 			}
-			$grandTotal     = $this->calcTax( $args['submission']->values['rsfp_Total'], RSFormProHelper::getConfig( 'multipaypal.tax.value' ), RSFormProHelper::getConfig( 'multipaypal.tax.type' ) );
+			$data        = RSFormProHelper::getComponentProperties( $hasPaypal[0] );
+
+			$customer_email = $data['Email'];
+			$grandTotal     = $this->calcTax( $args['submission']->values['rsfp_Total'], RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.value' ), RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.type' ) );
 			$placeholders   = &$args['placeholders'];
 			$values         = &$args['values'];
 			$placeholders[] = '{grandtotal}';
@@ -74,12 +77,16 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 	public function onRsformGetPayment( &$items, $formId ) {
 		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
 			$data        = RSFormProHelper::getComponentProperties( $components[0] );
+
+			$customer_email = $data['Email'];
+
+
 			$item        = new stdClass();
 			$item->value = $this->componentValue;
 			$item->text  = $data['LABEL'];
-			if ( $tax = RSFormProHelper::getConfig( 'multipaypal.tax.value' ) ) {
+			if ( $tax = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.value' ) ) {
 				$item->tax      = $tax;
-				$item->tax_type = RSFormProHelper::getConfig( 'multipaypal.tax.type' ) == '0' ? 'percent' : 'fixed';
+				$item->tax_type = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.type' ) == '0' ? 'percent' : 'fixed';
 
 			}
 			// add to array
@@ -277,7 +284,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 	 */
 	public function validateIpn($formId = '') {
 
-
+		$customer_email = '';
 		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
 			$data           = RSFormProHelper::getComponentProperties( $components[0] );
 			$customer_email = $data['Email'];
