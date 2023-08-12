@@ -94,34 +94,32 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 		}
 		if ( $components = RSFormProHelper::componentExists( $formId, $this->componentId ) ) {
 			$data = RSFormProHelper::getComponentProperties( $components[0] );
-
-$customer_email = $data['Email'];
-
+			$customer_email = $data['Email'];
 			if ( $price > 0 ) {
 				list( $replace, $with ) = RSFormProHelper::getReplacements( $SubmissionId );
 				$args = array(
 						'cmd'           => '_xclick',
-						'business'      => RSFormProHelper::getConfig( 'multipaypal.email' ),
+						'business'      => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.email' ),
 						'item_name'     => implode( ', ', $products ),
-						'currency_code' => RSFormProHelper::getConfig( 'payment.currency' ),
+						'currency_code' => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'payment.currency' ),
 						'amount'        => number_format( $price, 2, '.', '' ),
 						'notify_url'    => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.notify&code=' . $code,
 						'charset'       => 'utf-8',
-						'lc'            => RSFormProHelper::getConfig( 'multipaypal.language' ) ? RSFormProHelper::getConfig( 'multipaypal.language' ) : 'US',
+						'lc'            => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.language' ) ? RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.language' ) : 'US',
 						'bn'            => 'RSJoomla_SP',
 						'return'        => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.return'
 				);
 				// Add cancel URL
-				if ( $cancel = RSFormProHelper::getConfig( 'multipaypal.cancel' ) ) {
+				if ( $cancel = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.cancel' ) ) {
 					$args['cancel_return'] = str_replace( $replace, $with, $cancel );
 				}
 				// Add return URL
-				if ( $return = RSFormProHelper::getConfig( 'multipaypal.return' ) ) {
+				if ( $return = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.return' ) ) {
 					$args['return'] = str_replace( $replace, $with, $return );
 				}
 				// Add tax
-				if ( $tax = RSFormProHelper::getConfig( 'multipaypal.tax.value' ) ) {
-					if ( RSFormProHelper::getConfig( 'multipaypal.tax.type' ) ) {
+				if ( $tax = RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.value' ) ) {
+					if ( RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.tax.type' ) ) {
 						$args['tax'] = $tax;
 					} else {
 						$args['tax_rate'] = $tax;
@@ -602,7 +600,7 @@ class RSFormProMultiPayPal {
 
 	public static function getPaypalusers() {
 
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery( true )
 					->select( 'paypalemail' )
 					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) );
@@ -613,14 +611,17 @@ class RSFormProMultiPayPal {
 		return implode( "\n", $uniqueEmails );
 	}
 
-	public static function getPaypaluser( $email ) {
-		$db = JFactory::getDbo();
+	public static function getPaypaluser( $email, $field = '' ) {
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery( true )
 					->select( '*' )
 					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) )
 					->where( $db->quoteName( 'paypalemail' ) . ' = ' . $db->quote( $email ) );
 		$db->setQuery( $query );
 		$result = $db->loadAssoc();
+		if ( ! empty( $field ) ) {
+			$result = $result[ $field ];
+		}
 
 		return $result;
 	}
