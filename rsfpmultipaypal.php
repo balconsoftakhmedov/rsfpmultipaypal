@@ -275,7 +275,7 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 	 * @return array
 	 * @throws Exception
 	 */
-	public function validateIpn() {
+	public function validateIpn($formId) {
 		/**
 		 * Set the URL
 		 */
