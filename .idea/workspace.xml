@@ -17,7 +17,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="JoomlaConfiguration" doNotAskAgain="true" />
   <component name="ProjectId" id="2TpZhVQhCpfGbcIHude89pQcSok" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -41,6 +43,7 @@
       <workItem from="1691742110306" duration="593000" />
       <workItem from="1691820021189" duration="14202000" />
       <workItem from="1691838462241" duration="3023000" />
+      <workItem from="1691999665520" duration="4147000" />
     </task>
     <servers />
   </component>

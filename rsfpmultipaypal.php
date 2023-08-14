@@ -521,6 +521,12 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 				}
 			}
 			?>
+
+			<div class="alert alert-info">
+				<a href="<?php echo JRoute::_( 'index.php?option=com_multipaypal&view=paypal_customers' ); ?>">
+					Please go to Multi Paypal Customers page to manage Paypal Accounts
+				</a>
+			</div>
 			<div class="alert alert-info"><?php echo JText::_( 'PAYPAL_LANGUAGES_CODES' ) ?></div>
 		</div>
 		<?php
@@ -617,15 +623,20 @@ class RSFormProMultiPayPal {
 
 	public static function getPaypalusers() {
 
+
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery( true )
-					->select( 'paypalemail' )
+					->select( 'paypalemail, name' )
 					->from( $db->quoteName( '#__multipaypal_paypal_customer' ) );
 		$db->setQuery( $query );
-		$results      = $db->loadAssocList();
-		$uniqueEmails = array_unique( array_column( $results, 'paypalemail' ) );
+		$results = $db->loadAssocList();
+		$uniqueUsers    = array_unique( $results, SORT_REGULAR );
+		$formattedUsers = array_map( function ( $user ) {
+			return $user['paypalemail'] . '|' . $user['name'];
+		}, $uniqueUsers );
 
-		return implode( "\n", $uniqueEmails );
+		return implode( "\n", $formattedUsers );
+
 	}
 
 	public static function getPaypaluser( $email, $field = '' ) {
