@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a3655c55-ac27-4555-912d-3477fa11dd62" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forms/configuration.xml" beforeDir="false" afterPath="$PROJECT_DIR$/forms/configuration.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rsfpmultipaypal.php" beforeDir="false" afterPath="$PROJECT_DIR$/rsfpmultipaypal.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +40,7 @@
       <updated>1691742106676</updated>
       <workItem from="1691742110306" duration="593000" />
       <workItem from="1691820021189" duration="14202000" />
-      <workItem from="1691838462241" duration="814000" />
+      <workItem from="1691838462241" duration="3023000" />
     </task>
     <servers />
   </component>

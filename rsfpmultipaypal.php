@@ -108,11 +108,11 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 						'cmd'           => '_xclick',
 						'business'      => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.email' ),
 						'item_name'     => implode( ', ', $products ),
-						'currency_code' => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'payment.currency' ),
+						'currency_code' => RSFormProHelper::getConfig('payment.currency' ),
 						'amount'        => number_format( $price, 2, '.', '' ),
 						'notify_url'    => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.notify&code=' . $code,
 						'charset'       => 'utf-8',
-						'lc'            => RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.language' ) ? RSFormProMultiPayPal::getPaypaluser( $customer_email, 'multipaypal.language' ) : 'US',
+						'lc'            => RSFormProHelper::getConfig( 'multipaypal.language' ) ? RSFormProHelper::getConfig( 'multipaypal.language' ) : 'US',
 						'bn'            => 'RSJoomla_SP',
 						'return'        => JUri::root() . 'index.php?option=com_rsform&formId=' . $formId . '&task=plugin&plugin_task=multipaypal.return'
 				);
@@ -136,11 +136,10 @@ class plgSystemRsfpmultipaypal extends JPlugin {
 				$paypal = RSFormProMultiPayPal::getInstance($customer_email);
 				// If any options have already been set, use this to override the ones used here
 				$paypal->args = array_merge( $args, $paypal->args );
+				$this->log[]= print_r($paypal->args, true);
 
-				JLog::addLogger( array( 'text_file' => 'tttt.php' ),$paypal->args, array( 'com_rsform' ) );
-				echo '<pre>';
-print_r($paypal->args); echo '</pre>';
-				echo $paypal->url . '?' . http_build_query( $paypal->args, '', '&' );exit;
+
+				$this->writeLog();
 				JFactory::getApplication()->redirect( $paypal->url . '?' . http_build_query( $paypal->args, '', '&' ) );
 			} else {
 				$app      = JFactory::getApplication();
@@ -642,7 +641,7 @@ class RSFormProMultiPayPal {
 				'multipaypal.test'=> 'paypaltest',
 				'multipaypal.return'=> 'paypalreturn',
 				'multipaypal.cancel'=> 'paypalcancel',
-				'multipaypal.tax.value'=> 'paypaltaxvalue_one',
+				'multipaypal.tax.value'=> 'paypaltaxvalue',
 				'multipaypal.tax.type' => 'paypaltaxtype',
 		];
 		$field =$repl[$field];
